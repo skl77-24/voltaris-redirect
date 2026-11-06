@@ -7,16 +7,23 @@
 </head>
 <body>
 <p id="status">Weiterleitung zu Voltaris …</p>
+<p><a id="link" href="http://127.0.0.1:5097/meinbuero">Weiter zu Voltaris</a></p>
+<pre id="debug"></pre>
 <script>
-  // Reicht nur die OwnershipID an die lokale Voltaris-Instanz weiter.
-  const iid = new URLSearchParams(location.search).get("iid") ?? "";
+  // Sucht die OwnershipID in Query und Hash und reicht sie an die lokale Voltaris-Instanz weiter.
+  const params = new URLSearchParams(location.search);
+  const hashParams = new URLSearchParams(location.hash.replace(/^#\/?\??/, ""));
+  const iid = params.get("iid") ?? hashParams.get("iid") ?? "";
   const target = new URL("http://127.0.0.1:5097/meinbuero");
-  if (/^[A-Za-z0-9_-]{8,64}$/.test(iid)) {
-    target.searchParams.set("iid", iid);
+  if (iid) target.searchParams.set("iid", iid);
+  document.getElementById("link").href = target.toString();
+  document.getElementById("debug").textContent =
+    "Empfangene Adresse: " + location.href + "\nGefundene iid: " + (iid || "(keine)");
+  if (iid) {
     location.replace(target.toString());
   } else {
     document.getElementById("status").textContent =
-      "Keine gültige OwnershipID (?iid=…) in der Adresse gefunden.";
+      "Keine OwnershipID (iid) in der Adresse gefunden.";
   }
 </script>
 </body>
