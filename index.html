@@ -11,16 +11,15 @@
 <pre id="debug"></pre>
 <script>
   // Sucht die OwnershipID in Query und Hash und reicht sie an die lokale Voltaris-Instanz weiter.
-  const params = new URLSearchParams(location.search);
-  const hashParams = new URLSearchParams(location.hash.replace(/^#\/?\??/, ""));
-  const iid = params.get("iid") ?? hashParams.get("iid") ?? "";
-  const target = new URL("http://127.0.0.1:5097/meinbuero");
-  if (iid) target.searchParams.set("iid", iid);
-  document.getElementById("link").href = target.toString();
+  // Rohwert auslesen: URLSearchParams würde ein "+" der Base64-ID zu einem Leerzeichen machen.
+  const match = /[?&#]iid=([^&#]*)/.exec(location.search + location.hash);
+  const iid = match ? decodeURIComponent(match[1]) : "";
+  const target = "http://127.0.0.1:5097/meinbuero" + (iid ? "?iid=" + encodeURIComponent(iid) : "");
+  document.getElementById("link").href = target;
   document.getElementById("debug").textContent =
     "Empfangene Adresse: " + location.href + "\nGefundene iid: " + (iid || "(keine)");
   if (iid) {
-    location.replace(target.toString());
+    location.replace(target);
   } else {
     document.getElementById("status").textContent =
       "Keine OwnershipID (iid) in der Adresse gefunden.";
