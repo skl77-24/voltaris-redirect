@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<title>Voltaris – Weiterleitung</title>
+</head>
+<body>
+<p id="status">Weiterleitung zu Voltaris …</p>
+<script>
+  // Reicht nur die OwnershipID an die lokale Voltaris-Instanz weiter.
+  const iid = new URLSearchParams(location.search).get("iid") ?? "";
+  const target = new URL("http://127.0.0.1:5097/meinbuero");
+  if (/^[A-Za-z0-9_-]{8,64}$/.test(iid)) {
+    target.searchParams.set("iid", iid);
+    location.replace(target.toString());
+  } else {
+    document.getElementById("status").textContent =
+      "Keine gültige OwnershipID (?iid=…) in der Adresse gefunden.";
+  }
+</script>
+</body>
+</html>
